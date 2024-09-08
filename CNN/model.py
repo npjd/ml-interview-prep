@@ -4,8 +4,8 @@ class CNN(nn.Module):
     def __init__(self, num_classes=10):
         super(CNN, self).__init__()
         self.output = nn.Sequential(
-            # Input: (227×227×3)
-            nn.Conv2d(in_channels=3, out_channels=96, kernel_size=(11, 11), stride=4), # (55×55×96)
+            # Input: (227×227×1)
+            nn.Conv2d(in_channels=1, out_channels=96, kernel_size=(11, 11), stride=4), # (55×55×96)
             nn.ReLU(), # (55×55×96)
             nn.MaxPool2d(kernel_size=(3, 3), stride=2), # (27×27×96)
             nn.Conv2d(in_channels=96, out_channels=256, kernel_size=(5, 5), padding=2), # (27×27×256)

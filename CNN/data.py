@@ -15,8 +15,8 @@ def load_train_validation_data(
 ):
     # values form Cifar 10 — we could calculate them, but it's easier to just use them 
     normalize = transforms.Normalize(
-        mean=[0.4914, 0.4822, 0.4465],
-        std=[0.2023, 0.1994, 0.2010],
+        mean=[0.5],
+        std=[0.5],
     )
 
     transform = transforms.Compose([
@@ -25,7 +25,7 @@ def load_train_validation_data(
             normalize,
     ])
 
-    dataset = datasets.CIFAR10(
+    dataset = datasets.FashionMNIST(
         root=data_dir,
         train=True,
         transform=transform,
@@ -45,13 +45,13 @@ def load_train_validation_data(
     train_dataset = DataLoader(
         dataset,
         batch_size=batch_size,
-        sample=SubsetRandomSampler(train_split),
+        sampler=SubsetRandomSampler(train_split),
     )
 
     validation_dataset = DataLoader(
         dataset,
         batch_size=batch_size,
-        sample=SubsetRandomSampler(validation_split),
+        sampler=SubsetRandomSampler(validation_split),
     )
 
     return train_dataset, validation_dataset
@@ -62,8 +62,8 @@ def load_test_data(
         batch_size=8,
 ):
     normalize = transforms.Normalize(
-        mean=[0.4914, 0.4822, 0.4465],
-        std=[0.2023, 0.1994, 0.2010],
+        mean=[0.5],
+        std=[0.5],
     )
 
     transform = transforms.Compose([
@@ -72,7 +72,7 @@ def load_test_data(
         normalize,
     ])
 
-    dataset = datasets.CIFAR10(
+    dataset = datasets.FashionMNIST(
         root=data_dir,
         train=False,
         transform=transform,
