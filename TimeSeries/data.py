@@ -4,7 +4,7 @@ import os
 from unidecode import unidecode
 import string
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, random_split
 
 def findFiles(path): return glob.glob(path)
 
@@ -45,11 +45,20 @@ class NameDataset(Dataset):
     def __getitem__(self, idx):
         return self.data[idx]
 
-def get_train_data():
+def get_train_data(test_split=0.2):
         
     files = findFiles('./data/names/*.txt')
     dataset = NameDataset(files)
-    batch_size = 1  # has to be one because the length of the names is different
-    data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+    dataset_size = len(dataset)
+    test_size = int(test_split * dataset_size)
+    train_size = dataset_size - test_size
+
+    train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
+
+    # Create data loaders
+    batch_size = 1  # Has to be one because the length of the names is different
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
     
-    return data_loader
+    return train_loader, test_loader
