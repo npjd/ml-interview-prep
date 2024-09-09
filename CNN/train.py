@@ -12,6 +12,11 @@ batch_size = 64
 learning_rate = 0.005
 
 model = CNN(num_classes=num_classes).to(device)
+for name, parameter in model.named_parameters():
+    if parameter.requires_grad:
+        print(f"{name}: {parameter.shape}")
+
+print("Number of parameters: ", sum(p.numel() for p in model.parameters() if p.requires_grad))
 
 loss = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adamax(model.parameters(), lr=learning_rate)
