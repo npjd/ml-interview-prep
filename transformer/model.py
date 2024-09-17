@@ -96,7 +96,7 @@ class MultiHeadAttention(nn.Module):
 
         # Q, K, V -> (batch_size, h, seq_len, d_k)
 
-        attention_scores = Q @ K.transpose(-1, -2) / math.sqrt(self.d_k)
+        attention_scores = Q @ K.transpose(-1, -2) / math.sqrt(self.d_k) # (batch_size, h, seq_len, seq_len)
 
         if mask is not None:
             attention_scores = attention_scores.masked_fill(mask == 0, float('-inf'))
@@ -171,6 +171,8 @@ class DecoderBlock(nn.Module):
         x = self.residuals[1](x, lambda x: self.src_attn(x, encoder_output, encoder_output, src_mask))
         x = self.residuals[2](x, lambda x: self.ffn(x))
 
+        return x
+
 class Decoder(nn.Module):
 
     def __init__(self, layer: DecoderBlock, N) -> None:
@@ -187,6 +189,7 @@ class Decoder(nn.Module):
 class ProjectionLayer(nn.Module):
 
     def __init__(self, d_model, vocab_size):
+        super(ProjectionLayer, self).__init__()
         self.linear = nn.Linear(d_model, vocab_size)
 
     def forward(self, x):
@@ -218,7 +221,7 @@ class Transformer(nn.Module):
         decoder_output = self.decode(tgt, encoder_output, src_mask, tgt_mask)
         return self.generator(decoder_output)
     
-def generate_model(
+def build_model(
         d_model,
         src_vocab_size,
         tgt_vocab_size,
@@ -247,6 +250,7 @@ def generate_model(
         if p.dim() > 1:
             nn.init.xavier_uniform_(p)
     
+    print(f"Model loaded with {sum(p.numel() for p in model.parameters() if p.requires_grad)} trainable parameters")
     return model
 
 
